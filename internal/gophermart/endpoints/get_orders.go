@@ -5,27 +5,30 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/balance"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/balance/storager"
+	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/orders"
+	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/orders/storager"
 	r "github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/responses"
 	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/utils"
 	"github.com/novoseltcev/go-diploma-gofermart/internal/shared"
 )
 
 
-func GetBalance(uowPool shared.UOWPool) gin.HandlerFunc {
+func GetOrders(uowPool shared.UOWPool) gin.HandlerFunc {
 	return func (c *gin.Context) {
 		userId := utils.GetUserId(c)
-
 		uow := uowPool(c)
 		defer uow.Close()
 
-		balance, err := balance.GetBalance(c, storager.New(uow), userId)
-
+		orders, err := orders.GetUserOrders(c, storager.New(uow), userId)
 		if err != nil {
 			r.InternalErr(c, err)
 			return
 		}
-		c.JSON(http.StatusOK, balance)
+
+		if len(orders) == 0 {
+			c.JSON(http.StatusNoContent, nil)
+		} else {
+			c.JSON(http.StatusOK, orders)
+		}
 	}
 }

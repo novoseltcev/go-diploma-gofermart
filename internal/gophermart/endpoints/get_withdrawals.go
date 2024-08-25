@@ -12,20 +12,23 @@ import (
 	"github.com/novoseltcev/go-diploma-gofermart/internal/shared"
 )
 
-
-func GetBalance(uowPool shared.UOWPool) gin.HandlerFunc {
+func GetWithdrawals(uowPool shared.UOWPool) gin.HandlerFunc {
 	return func (c *gin.Context) {
 		userId := utils.GetUserId(c)
 
 		uow := uowPool(c)
 		defer uow.Close()
-
-		balance, err := balance.GetBalance(c, storager.New(uow), userId)
-
+		
+		withdrawals, err := balance.GetUserWithdrawals(c, storager.New(uow), userId)
 		if err != nil {
 			r.InternalErr(c, err)
 			return
 		}
-		c.JSON(http.StatusOK, balance)
+
+		if len(withdrawals) == 0 {
+			c.JSON(http.StatusNoContent, nil)
+		} else {
+			c.JSON(http.StatusOK, withdrawals)
+		}
 	}
 }

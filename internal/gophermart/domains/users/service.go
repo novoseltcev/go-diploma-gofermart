@@ -1,4 +1,4 @@
-package user
+package users
 
 import (
 	"context"
@@ -15,15 +15,13 @@ type UserStorager interface {
 	GetById(ctx context.Context, userId uint64) (*models.User, error)
 	GetByLogin(ctx context.Context, login string) (*models.User, error)
 	Create(ctx context.Context, login, password string) (uint64, error)
-	GetWithrawn(ctx context.Context, userId uint64) (models.Money, error)
 }
+
 
 var (
 	ErrAlreadyExists = errors.New("User already exists")
 	ErrNotExists = errors.New("User not exists")
 )
-
-var _ UserStorager = &UserRepository{}
 
 
 func Register(ctx context.Context, storager UserStorager, login, password string) (userId uint64, err error) {
@@ -59,25 +57,4 @@ func Login(ctx context.Context, storager UserStorager, login, password string) (
 	}
 
 	return user.Id, nil
-}
-
-func GetBalance(ctx context.Context, storager UserStorager, userId uint64) (*models.Balance, error) {
-	user, err := storager.GetById(ctx, userId)
-	if err != nil {
-		return nil, err
-	}
-	
-	if user == nil {
-		return nil, ErrNotExists
-	}
-
-	withdrawn, err := storager.GetWithrawn(ctx, userId)
-	if err != nil {
-		return nil, err
-	}
-
-	return &models.Balance{
-		Balance: user.Balance.Value,
-		Withdrawn: withdrawn.Value,
-	}, nil
 }

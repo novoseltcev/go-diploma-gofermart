@@ -18,6 +18,6 @@ func (m *Money) Scan(src interface{}) (err error) {
 	case nil: value = 0
 	default: return fmt.Errorf("Money not allow Scan type=%T", src)
     }
-    *m =  Money{float32(value)}
+    *m = Money{float32(value)}
     return err
 }

@@ -7,17 +7,22 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/auth"
-	domain "github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/user"
+	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/users"
+	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/users/storager"
 	r "github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/responses"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/schemas"
 	"github.com/novoseltcev/go-diploma-gofermart/internal/shared"
 )
 
 
 func Login(uowPool shared.UOWPool, jwtManager *auth.JWTManager) gin.HandlerFunc {
+	type reqBody struct {
+		Login string `json:"login" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+
 	return func (c *gin.Context) {
-		var scheme schemas.AuthData
-		if err := c.Bind(&scheme); err != nil {
+		var body reqBody
+		if err := c.Bind(&body); err != nil {
 			r.InvalidRequestErr(c, err)
 			return
 		}
@@ -25,9 +30,9 @@ func Login(uowPool shared.UOWPool, jwtManager *auth.JWTManager) gin.HandlerFunc 
 		uow := uowPool(c)
 		defer uow.Close()
 
-		userId, err := domain.Login(c, domain.NewStorager(uow), scheme.Login, scheme.Password)
+		userId, err := users.Login(c, storager.New(uow), body.Login, body.Password)
 		if err != nil {
-			if errors.Is(err, domain.ErrNotExists) {
+			if errors.Is(err, users.ErrNotExists) {
 				r.UnauthorizedErr(c, err)
 			} else {
 				r.InternalErr(c, err)

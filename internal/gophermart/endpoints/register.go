@@ -7,19 +7,22 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/auth"
-	domain "github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/user"
+	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/users"
+	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/users/storager"
 	r "github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/responses"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/schemas"
 	"github.com/novoseltcev/go-diploma-gofermart/internal/shared"
 )
 
 
-
-
 func Register(uowPool shared.UOWPool, jwtManager *auth.JWTManager) gin.HandlerFunc {
+	type reqBody struct {
+		Login string `json:"login" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+
 	return func (c *gin.Context) {
-		var authData schemas.AuthData
-		if err := c.Bind(&authData); err != nil {
+		var body reqBody
+		if err := c.Bind(&body); err != nil {
 			r.InvalidRequestErr(c, err)
 			return
 		}
@@ -27,9 +30,9 @@ func Register(uowPool shared.UOWPool, jwtManager *auth.JWTManager) gin.HandlerFu
 		uow := uowPool(c)
 		defer uow.Close()
 
-		userId, err := domain.Register(c, domain.NewStorager(uow), authData.Login, authData.Password)
+		userId, err := users.Register(c, storager.New(uow), body.Login, body.Password)
 		if err != nil {
-			if errors.Is(err, domain.ErrAlreadyExists) {
+			if errors.Is(err, users.ErrAlreadyExists) {
 				r.LogicErr(c, err)
 			} else {
 				r.InternalErr(c, err)
