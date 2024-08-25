@@ -19,9 +19,10 @@ CMD=$(DIR)/gophermart
 build: generate $(DIR)/main.go
 	go build -buildvcs=false -o $(CMD) $(DIR) 
 
+DATABASE_URI=postgresql://postgres:postgres@0.0.0.0:5432/praktikum?sslmode=disable
 .PHONY: gophermart
 gophermart: $(CMD)
-	DATABASE_DSN="postgres://postgres:postgres@0.0.0.0:5432/praktikum?sslmode=disable" $(CMD) -a :8080
+	DATABASE_URI=$(DATABASE_URI) JWT_LIFETIME=1 JWT_SECRET=secret123 $(CMD) -a :8080
 
 up:
 	docker-compose up -d --build
@@ -29,10 +30,14 @@ up:
 down:
 	docker-compose down
 
+.PHONY: psql
 psql:
-	PGPASSWORD=postgres psql -U postgres -h 0.0.0.0 -p 5432 -d praktikum
+	psql $(DATABASE_URI)
 
 PLATFORM=darwin_arm64
 .PHONY: accural
 accural: ./cmd/accrual/accrual_$(PLATFORM)
 	./cmd/accrual/accrual_$(PLATFORM)
+
+migrate:
+	migrate -source file://migrations -database $(DATABASE_URI) up
