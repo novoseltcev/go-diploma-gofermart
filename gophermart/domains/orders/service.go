@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/models"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/utils"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/models"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/utils"
 )
 
 

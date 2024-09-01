@@ -7,9 +7,9 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/users"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/models"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/shared"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/domains/users"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/models"
+	"github.com/novoseltcev/go-diploma-gofermart/shared"
 )
 
 type repository struct {

@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/auth"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/auth"
 )
 
 

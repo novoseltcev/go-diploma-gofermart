@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 
-	r "github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/responses"
+	r "github.com/novoseltcev/go-diploma-gofermart/gophermart/responses"
 )
 
 func JWTMiddleware(manager *JWTManager) gin.HandlerFunc {

@@ -5,7 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart"
 )
 
 func Cmd() *cobra.Command {

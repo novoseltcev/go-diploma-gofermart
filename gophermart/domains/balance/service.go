@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/models"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/utils"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/models"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/utils"
 )
 
 
@@ -54,7 +54,7 @@ func Withdrawn(ctx context.Context, storager BalanceStorager, userId uint64, sum
 		return err
 	}
 
-	newBalanceValue := float32(sum) - balance.Value
+	newBalanceValue := balance.Value - float32(sum)
 	if newBalanceValue < 0. {
 		return NotEnoughtErr
 	}

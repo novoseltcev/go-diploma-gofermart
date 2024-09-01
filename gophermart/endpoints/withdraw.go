@@ -6,11 +6,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/balance"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/balance/storager"
-	r "github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/responses"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/utils"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/shared"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/domains/balance"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/domains/balance/storager"
+	r "github.com/novoseltcev/go-diploma-gofermart/gophermart/responses"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/utils"
+	"github.com/novoseltcev/go-diploma-gofermart/shared"
 )
 
 

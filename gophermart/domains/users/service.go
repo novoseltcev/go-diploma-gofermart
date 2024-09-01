@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/models"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/models"
 )
 
 

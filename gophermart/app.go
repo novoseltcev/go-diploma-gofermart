@@ -11,10 +11,11 @@ import (
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/endpoints"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/shared"
-	// "github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/domains/user"
-	"github.com/novoseltcev/go-diploma-gofermart/internal/gophermart/auth"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/endpoints"
+	"github.com/novoseltcev/go-diploma-gofermart/shared"
+
+	// "github.com/novoseltcev/go-diploma-gofermart/gophermart/domains/user"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/auth"
 )
 
 
