@@ -64,8 +64,8 @@ func (app *App) GetRouter(db *sqlx.DB) http.Handler {
 	{
 		user_api.Use(auth.JWTMiddleware(jwtManager))
 
+		user_api.POST("/orders", endpoints.AddOrder(uowPool))
 		user_api.GET("/orders", endpoints.GetOrders(uowPool))
-		user_api.POST("/order", endpoints.AddOrder(uowPool))
 
 		user_api.GET("/balance", endpoints.GetBalance(uowPool))
 		user_api.POST("/balance/withdraw", endpoints.Withdraw(uowPool))
