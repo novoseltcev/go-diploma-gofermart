@@ -16,7 +16,7 @@ cmd/gophermart/main
 cmd/gophermart/gophermart
 
 # Mocks
-mocks/
+# mocks/
 
 # Dependency directories (remove the comment below to include it)
 vendor/

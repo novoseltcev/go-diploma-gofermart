@@ -6,6 +6,6 @@ type Order struct {
 	Number		string
 	Status		string
 	Accrual		*Money
-	UserId		uint64
+	UserID		uint64
 	UploadedAt 	time.Time
 }

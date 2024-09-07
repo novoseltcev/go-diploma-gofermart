@@ -15,13 +15,13 @@ import (
 
 func GetOrders(uowPool shared.UOWPool) gin.HandlerFunc {
 	return func (c *gin.Context) {
-		userId := utils.GetUserId(c)
+		userID := utils.GetUserID(c)
 		uow := uowPool(c)
 		defer uow.Close()
 
-		orders, err := orders.GetUserOrders(c, storager.New(uow), userId)
+		orders, err := orders.GetUserOrders(c, storager.New(uow), userID)
 		if err != nil {
-			r.InternalErr(c, err)
+			r.ErrInternal(c, err)
 			return
 		}
 

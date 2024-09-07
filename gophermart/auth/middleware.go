@@ -13,7 +13,7 @@ func JWTMiddleware(manager *JWTManager) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {
-			r.UnauthorizedErr(c, errors.New(""))
+			r.ErrUnauthorized(c, errors.New(""))
 		}
 
 		claims := &Claims{}
@@ -29,24 +29,24 @@ func JWTMiddleware(manager *JWTManager) gin.HandlerFunc {
 		if err != nil {
 			var validationErr jwt.ValidationError
 			if errors.As(err, &validationErr) {
-				r.UnauthorizedErr(c, validationErr.Unwrap())
+				r.ErrUnauthorized(c, validationErr.Unwrap())
 			} else {
-				r.UnauthorizedErr(c, err)
+				r.ErrUnauthorized(c, err)
 			}
 			return
 		}
 
 		if !token.Valid {
-			r.UnauthorizedErr(c, jwt.ErrTokenNotValidYet)
+			r.ErrUnauthorized(c, jwt.ErrTokenNotValidYet)
 			return
 		}
 
-		if claims.UserId == 0 {
-			r.UnauthorizedErr(c, jwt.ErrTokenInvalidClaims)
+		if claims.UserID == 0 {
+			r.ErrUnauthorized(c, jwt.ErrTokenInvalidClaims)
 			return 
 		}
 
-		c.Set(IdentityKey, claims.UserId)
+		c.Set(IdentityKey, claims.UserID)
 		c.Next()
 	}
 }

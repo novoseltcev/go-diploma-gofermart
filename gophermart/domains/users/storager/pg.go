@@ -25,14 +25,6 @@ func (r *repository) IsLoginExists(ctx context.Context, login string) (result bo
 	return result, err
 }
 
-func (r *repository) GetById(ctx context.Context, userId uint64) (result *models.User, err error) {
-	err = r.tx.GetContext(ctx, result, "SELECT id, login, balance, hashed_password FROM users WHERE id = $1", userId)
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
-	return result, err
-}
-
 func (r *repository) GetByLogin(ctx context.Context, login string) (result *models.User, err error) {
 	err = r.tx.GetContext(ctx, result, "SELECT id, login, balance, hashed_password FROM users WHERE login = $1", login)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {

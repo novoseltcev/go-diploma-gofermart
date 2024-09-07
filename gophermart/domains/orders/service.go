@@ -10,25 +10,25 @@ import (
 
 
 type OrderStorager interface {
-	GetUserOrders(ctx context.Context, userId uint64) ([]models.Order, error)
+	GetUserOrders(ctx context.Context, userID uint64) ([]models.Order, error)
 	GetByNumber(ctx context.Context, number string) (*models.Order, error)
-	Create(ctx context.Context, userId uint64, number string) error
+	Create(ctx context.Context, userID uint64, number string) error
 }
 
 var (
-	LunhNumberValidationErr = errors.New("Invalid Lunh's number")
-	OrderLoadedErr = errors.New("Order already loaded")
-	OrderNotMeLoadedErr = errors.New("Order already loaded, but not owned by this user")
+	ErrLunhNumberValidation = errors.New("invalid Lunh's number")
+	ErrOrderLoaded = errors.New("order already loaded")
+	ErrOrderNotMeLoaded = errors.New("order already loaded, but not owned by this user")
 )
 
 
-func GetUserOrders(ctx context.Context, storager OrderStorager, userId uint64) ([]models.Order, error) {
-	return storager.GetUserOrders(ctx, userId)
+func GetUserOrders(ctx context.Context, storager OrderStorager, userID uint64) ([]models.Order, error) {
+	return storager.GetUserOrders(ctx, userID)
 }
 
-func AddOrderToUser(ctx context.Context, storager OrderStorager, userId uint64, number string) error {
+func AddOrderToUser(ctx context.Context, storager OrderStorager, userID uint64, number string) error {
 	if !utils.ValidateLunhNumber(number) {
-		return LunhNumberValidationErr
+		return ErrLunhNumberValidation
 	}
 	
 	order, err := storager.GetByNumber(ctx, number)
@@ -37,11 +37,11 @@ func AddOrderToUser(ctx context.Context, storager OrderStorager, userId uint64, 
 	}
 
 	if order != nil {
-		if order.UserId == userId {
-			return OrderLoadedErr
+		if order.UserID == userID {
+			return ErrOrderLoaded
 		}
-		return OrderNotMeLoadedErr
+		return ErrOrderNotMeLoaded
 	}
 
-	return storager.Create(ctx, userId, number)
+	return storager.Create(ctx, userID, number)
 }

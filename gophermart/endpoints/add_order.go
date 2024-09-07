@@ -21,26 +21,26 @@ func AddOrder(uowPool shared.UOWPool) gin.HandlerFunc {
 	}
 
 	return func (c *gin.Context) {
-		userId := utils.GetUserId(c)
+		userID := utils.GetUserID(c)
 
 		var body reqBody
 		if err := c.Bind(&body); err != nil {
-			r.InvalidRequestErr(c, err)
+			r.ErrInvalidRequest(c, err)
 			return
 		}
 
 		uow := uowPool(c)
 		defer uow.Close()
 
-		if err := orders.AddOrderToUser(c, storager.New(uow), userId, body.Number); err != nil {
-			if errors.Is(err, orders.OrderLoadedErr) {
+		if err := orders.AddOrderToUser(c, storager.New(uow), userID, body.Number); err != nil {
+			if errors.Is(err, orders.ErrOrderLoaded) {
 				c.JSON(http.StatusOK, nil)
-			} else if errors.Is(err, orders.LunhNumberValidationErr) {
-				r.ValidationErr(c, err)
-			} else if errors.Is(err, orders.OrderNotMeLoadedErr) {
-				r.LogicErr(c, err)
+			} else if errors.Is(err, orders.ErrLunhNumberValidation) {
+				r.ErrValidation(c, err)
+			} else if errors.Is(err, orders.ErrOrderNotMeLoaded) {
+				r.ErrLogic(c, err)
 			} else {
-				r.InternalErr(c, err)
+				r.ErrInternal(c, err)
 			}
 			return
 		}

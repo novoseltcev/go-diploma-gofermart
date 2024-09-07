@@ -14,19 +14,19 @@ import (
 )
 
 var (
-	TooManyRequestsErr = errors.New("Too many requests")
-	UnexpectedErr	   = errors.New("Unexpected error")
+	ErrTooManyRequests = errors.New("too many requests")
+	ErrUnexpected	   = errors.New("unexpected error")
 )
 
-type AccuralApi struct {
+type AccuralAPI struct {
 	client *http.Client
-	baseUrl string
+	baseURL string
 	timeout time.Duration
 	retries int
 }
 
-func NewAccuralApi(client *http.Client, baseUrl string, timeout time.Duration, retries int) *AccuralApi {
-	return &AccuralApi{client: client, baseUrl: baseUrl, timeout: timeout, retries: retries}
+func NewAccuralAPI(client *http.Client, baseURL string, timeout time.Duration, retries int) *AccuralAPI {
+	return &AccuralAPI{client: client, baseURL: baseURL, timeout: timeout, retries: retries}
 }
 
 
@@ -36,17 +36,17 @@ type Order struct {
 	Accural uint64 `json:"accural,omitempty"`
 }
 
-func (api *AccuralApi) GetOrderAccuralStatus(ctx context.Context, order string) (result *Order, err error) {
+func (api *AccuralAPI) GetOrderAccuralStatus(ctx context.Context, order string) (result *Order, err error) {
 	var (
 		res *http.Response
-		retries int = api.retries
+		retries = api.retries
 	)
 
     for retries > 0 {
 		ctx, cancel := context.WithTimeout(ctx, api.timeout)
 		defer cancel()
 
-        req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/api/orders/%s", api.baseUrl, order), http.NoBody)
+        req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/api/orders/%s", api.baseURL, order), http.NoBody)
 		if err != nil {
 			return nil, err
 		}
@@ -54,7 +54,9 @@ func (api *AccuralApi) GetOrderAccuralStatus(ctx context.Context, order string) 
 		res, err = api.client.Do(req)
 		if err != nil {
 			retries -= 1
-			continue
+		} else {
+			defer res.Body.Close()
+			break
 		}
 	}
 	if err != nil {
@@ -63,7 +65,6 @@ func (api *AccuralApi) GetOrderAccuralStatus(ctx context.Context, order string) 
 
 	var buf *bytes.Buffer
 	if res.Body != nil {
-		defer res.Body.Close()
 		if _, err := io.Copy(buf, res.Body); err != nil {
 			return nil, err
 		}
@@ -75,11 +76,11 @@ func (api *AccuralApi) GetOrderAccuralStatus(ctx context.Context, order string) 
 	case http.StatusNoContent:
 		return nil, nil
 	case http.StatusTooManyRequests:
-		return nil, TooManyRequestsErr
+		return nil, ErrTooManyRequests
 	case http.StatusInternalServerError | http.StatusBadGateway | http.StatusServiceUnavailable:
-		return nil, UnexpectedErr
+		return nil, ErrUnexpected
 	default:
 		log.WithField("code", res.StatusCode).Warn("Unhandled status code from accural api")
-		return nil, UnexpectedErr
+		return nil, ErrUnexpected
 	}
 }

@@ -21,22 +21,22 @@ func Withdraw(uowPool shared.UOWPool) gin.HandlerFunc {
 	}
 
 	return func (c *gin.Context) {
-		userId := utils.GetUserId(c)
+		userID := utils.GetUserID(c)
 		
 		var body reqBody
 		if err := c.BindJSON(&body); err != nil {
-			r.InvalidRequestErr(c, err)
+			r.ErrInvalidRequest(c, err)
 			return
 		}
 
 		uow := uowPool(c)
 		defer uow.Close()
 
-		err := balance.Withdrawn(c, storager.New(uow), userId, body.Sum, body.Order)
+		err := balance.Withdrawn(c, storager.New(uow), userID, body.Sum, body.Order)
 		if err != nil {
-			if errors.Is(err, balance.LunhNumberValidationErr) {
-				r.ValidationErr(c, err)
-			} else if errors.Is(err, balance.NotEnoughtErr) {
+			if errors.Is(err, balance.ErrLunhNumberValidation) {
+				r.ErrValidation(c, err)
+			} else if errors.Is(err, balance.ErrNotEnought) {
 				_ = c.Error(err)
 				c.AbortWithStatusJSON(http.StatusPaymentRequired, gin.H{"msg": err.Error()})
 			}

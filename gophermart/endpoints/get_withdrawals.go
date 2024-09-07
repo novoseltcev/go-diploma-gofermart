@@ -14,14 +14,14 @@ import (
 
 func GetWithdrawals(uowPool shared.UOWPool) gin.HandlerFunc {
 	return func (c *gin.Context) {
-		userId := utils.GetUserId(c)
+		userID := utils.GetUserID(c)
 
 		uow := uowPool(c)
 		defer uow.Close()
 		
-		withdrawals, err := balance.GetUserWithdrawals(c, storager.New(uow), userId)
+		withdrawals, err := balance.GetUserWithdrawals(c, storager.New(uow), userID)
 		if err != nil {
-			r.InternalErr(c, err)
+			r.ErrInternal(c, err)
 			return
 		}
 

@@ -1,4 +1,4 @@
 package auth
 
 const IdentityKey = "USER_ID"
-type UserId = uint64
+type UserID = uint64

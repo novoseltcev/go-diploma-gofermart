@@ -15,10 +15,10 @@ import (
 )
 
 var (
-	CTX = context.TODO()
-	USER_ID uint64 = 1
-	NUMBER = "1384858"
-	ERR = errors.New("")
+	someCtx = context.TODO()
+	someUserID uint64 = 1
+	someNumber = "1384858"
+	errSome = errors.New("")
 )
 
 func TestSuccessGetUserOrders(t *testing.T) {
@@ -31,14 +31,14 @@ func TestSuccessGetUserOrders(t *testing.T) {
 			Number:     "",
 			Status:     "",
 			Accrual:    nil,
-			UserId:     USER_ID,
+			UserID:     someUserID,
 			UploadedAt: time.Now(),
 		},
 	}
 
-	storager.EXPECT().GetUserOrders(CTX, USER_ID).Return(want, nil)
+	storager.EXPECT().GetUserOrders(someCtx, someUserID).Return(want, nil)
 
-	got, err := GetUserOrders(CTX, storager, USER_ID)
+	got, err := GetUserOrders(someCtx, storager, someUserID)
 	require.Nil(t, err)
 	assert.EqualValues(t, want, got)
 }
@@ -48,10 +48,10 @@ func TestFailedGetUserOrders(t *testing.T) {
 	defer ctrl.Finish()
 	storager := mock_orders.NewMockOrderStorager(ctrl)
 
-	storager.EXPECT().GetUserOrders(CTX, USER_ID).Return(nil, ERR)
+	storager.EXPECT().GetUserOrders(someCtx, someUserID).Return(nil, errSome)
 
-	_, err := GetUserOrders(CTX, storager, USER_ID)
-	assert.ErrorIs(t, err, ERR)
+	_, err := GetUserOrders(someCtx, storager, someUserID)
+	assert.ErrorIs(t, err, errSome)
 }
 
 func TestSuccessAddOrderToUser(t *testing.T) {
@@ -61,7 +61,7 @@ func TestSuccessAddOrderToUser(t *testing.T) {
 	}{
 		{
 			name: "base",
-			number: NUMBER,
+			number: someNumber,
 		},
 	}
 	for _, tt := range tests {
@@ -71,11 +71,11 @@ func TestSuccessAddOrderToUser(t *testing.T) {
 			storager := mock_orders.NewMockOrderStorager(ctrl)
 			
 			gomock.InOrder(
-				storager.EXPECT().GetByNumber(CTX, tt.number).Return(nil, nil),
-				storager.EXPECT().Create(CTX, USER_ID, tt.number).Return(nil),
+				storager.EXPECT().GetByNumber(someCtx, tt.number).Return(nil, nil),
+				storager.EXPECT().Create(someCtx, someUserID, tt.number).Return(nil),
 			)
 
-			assert.Nil(t, AddOrderToUser(CTX, storager, USER_ID, tt.number))
+			assert.Nil(t, AddOrderToUser(someCtx, storager, someUserID, tt.number))
 		})
 	}
 }
@@ -85,12 +85,12 @@ func TestAddAlreadyAdderOrderToUser(t *testing.T) {
 	defer ctrl.Finish()
 	storager := mock_orders.NewMockOrderStorager(ctrl)
 
-	storager.EXPECT().GetByNumber(CTX, NUMBER).Return(&models.Order{UserId: USER_ID}, nil)
-	storager.EXPECT().Create(CTX, USER_ID, NUMBER).Times(0)
+	storager.EXPECT().GetByNumber(someCtx, someNumber).Return(&models.Order{UserID: someUserID}, nil)
+	storager.EXPECT().Create(someCtx, someUserID, someNumber).Times(0)
 
-	err := AddOrderToUser(CTX, storager, USER_ID, NUMBER)
+	err := AddOrderToUser(someCtx, storager, someUserID, someNumber)
 	require.NotNil(t, err)
-	assert.ErrorIs(t, err, OrderLoadedErr)
+	assert.ErrorIs(t, err, ErrOrderLoaded)
 }
 
 func TestAddAlreadyAdderOrderToAnotherUser(t *testing.T) {
@@ -98,12 +98,12 @@ func TestAddAlreadyAdderOrderToAnotherUser(t *testing.T) {
 	defer ctrl.Finish()
 	storager := mock_orders.NewMockOrderStorager(ctrl)
 
-	storager.EXPECT().GetByNumber(CTX, NUMBER).Return(&models.Order{UserId: USER_ID + 1}, nil)
-	storager.EXPECT().Create(CTX, USER_ID, NUMBER).Times(0)
+	storager.EXPECT().GetByNumber(someCtx, someNumber).Return(&models.Order{UserID: someUserID + 1}, nil)
+	storager.EXPECT().Create(someCtx, someUserID, someNumber).Times(0)
 
-	err := AddOrderToUser(CTX, storager, USER_ID, NUMBER)
+	err := AddOrderToUser(someCtx, storager, someUserID, someNumber)
 	require.NotNil(t, err)
-	assert.ErrorIs(t, err, OrderNotMeLoadedErr)
+	assert.ErrorIs(t, err, ErrOrderNotMeLoaded)
 }
 
 func TestFailedAddInvalidOrderToUser(t *testing.T) {
@@ -111,8 +111,8 @@ func TestFailedAddInvalidOrderToUser(t *testing.T) {
 	defer ctrl.Finish()
 	storager := mock_orders.NewMockOrderStorager(ctrl)
 
-	err := AddOrderToUser(CTX, storager, USER_ID, "21321")
-	assert.ErrorIs(t, err, LunhNumberValidationErr)
+	err := AddOrderToUser(someCtx, storager, someUserID, "21321")
+	assert.ErrorIs(t, err, ErrLunhNumberValidation)
 }
 
 func TestFailedAddOrderToUser(t *testing.T) {
@@ -123,13 +123,13 @@ func TestFailedAddOrderToUser(t *testing.T) {
 	}{
 		{
 			name: "failed GetByNumber",
-			GetByNumberErr: ERR,
+			GetByNumberErr: errSome,
 			CreateErr: nil,
 		},
 		{
 			name: "failed Create",
 			GetByNumberErr: nil,
-			CreateErr: ERR,
+			CreateErr: errSome,
 		},
 	}
 	for _, tt := range tests {
@@ -139,12 +139,12 @@ func TestFailedAddOrderToUser(t *testing.T) {
 			storager := mock_orders.NewMockOrderStorager(ctrl)
 
 
-			storager.EXPECT().GetByNumber(CTX, NUMBER).Return(nil, tt.GetByNumberErr)
+			storager.EXPECT().GetByNumber(someCtx, someNumber).Return(nil, tt.GetByNumberErr)
 			if tt.GetByNumberErr == nil {
 				require.NotNil(t, tt.CreateErr)
-				storager.EXPECT().Create(CTX, USER_ID, NUMBER).Return(tt.CreateErr)
+				storager.EXPECT().Create(someCtx, someUserID, someNumber).Return(tt.CreateErr)
 			}
-			assert.ErrorIs(t, AddOrderToUser(CTX, storager, USER_ID, NUMBER), ERR)
+			assert.ErrorIs(t, AddOrderToUser(someCtx, storager, someUserID, someNumber), errSome)
 		})
 	}
 }

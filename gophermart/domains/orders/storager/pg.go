@@ -19,8 +19,8 @@ func New(uow *shared.UnitOfWork) orders.OrderStorager {
 	return &repository{tx: uow.Tx}
 }
 
-func (r *repository) GetUserOrders(ctx context.Context, userId uint64) (result []models.Order, err error) {
-	err = r.tx.GetContext(ctx, &result, "SELECT number, status, accrual, user_id, uploaded_at FROM orders WHERE user_id = $1", userId)
+func (r *repository) GetUserOrders(ctx context.Context, userID uint64) (result []models.Order, err error) {
+	err = r.tx.GetContext(ctx, &result, "SELECT number, status, accrual, user_id, uploaded_at FROM orders WHERE user_id = $1", userID)
 	return result, err
 }
 
@@ -33,7 +33,7 @@ func (r *repository) GetByNumber(ctx context.Context, number string) (*models.Or
 	return &order, err
 }
 
-func (r *repository) Create(ctx context.Context, userId uint64, number string) error {
-	_, err := r.tx.ExecContext(ctx, "INSERT INTO orders (number, user_id) VALUES ($1, $2)", number, userId)
+func (r *repository) Create(ctx context.Context, userID uint64, number string) error {
+	_, err := r.tx.ExecContext(ctx, "INSERT INTO orders (number, user_id) VALUES ($1, $2)", number, userID)
 	return err
 }

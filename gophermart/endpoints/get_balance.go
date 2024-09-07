@@ -15,15 +15,15 @@ import (
 
 func GetBalance(uowPool shared.UOWPool) gin.HandlerFunc {
 	return func (c *gin.Context) {
-		userId := utils.GetUserId(c)
+		userID := utils.GetUserID(c)
 
 		uow := uowPool(c)
 		defer uow.Close()
 
-		balance, err := balance.GetBalance(c, storager.New(uow), userId)
+		balance, err := balance.GetBalance(c, storager.New(uow), userID)
 
 		if err != nil {
-			r.InternalErr(c, err)
+			r.ErrInternal(c, err)
 			return
 		}
 		c.JSON(http.StatusOK, balance)

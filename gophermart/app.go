@@ -14,7 +14,6 @@ import (
 	"github.com/novoseltcev/go-diploma-gofermart/gophermart/endpoints"
 	"github.com/novoseltcev/go-diploma-gofermart/shared"
 
-	// "github.com/novoseltcev/go-diploma-gofermart/gophermart/domains/user"
 	"github.com/novoseltcev/go-diploma-gofermart/gophermart/auth"
 )
 
@@ -32,7 +31,7 @@ func NewApp(config Config) *App {
 
 func (app *App) Start() error {
 	if app.config.DatabaseDsn == "" {
-	    return errors.New("Not specified DatabaseDsn from env or arg")
+	    return errors.New("not specified DatabaseDsn from env or arg")
 	}
 
 	db, err := sqlx.Open("pgx", app.config.DatabaseDsn)
@@ -60,16 +59,16 @@ func (app *App) GetRouter(db *sqlx.DB) http.Handler {
 	r.POST("/api/user/register", endpoints.Register(uowPool, jwtManager))
 
 
-	user_api := r.Group("/api/user")
+	userAPI := r.Group("/api/user")
 	{
-		user_api.Use(auth.JWTMiddleware(jwtManager))
+		userAPI.Use(auth.JWTMiddleware(jwtManager))
 
-		user_api.POST("/orders", endpoints.AddOrder(uowPool))
-		user_api.GET("/orders", endpoints.GetOrders(uowPool))
+		userAPI.POST("/orders", endpoints.AddOrder(uowPool))
+		userAPI.GET("/orders", endpoints.GetOrders(uowPool))
 
-		user_api.GET("/balance", endpoints.GetBalance(uowPool))
-		user_api.POST("/balance/withdraw", endpoints.Withdraw(uowPool))
-		user_api.GET("/withdrawals", endpoints.GetWithdrawals(uowPool))
+		userAPI.GET("/balance", endpoints.GetBalance(uowPool))
+		userAPI.POST("/balance/withdraw", endpoints.Withdraw(uowPool))
+		userAPI.GET("/withdrawals", endpoints.GetWithdrawals(uowPool))
 	}
 
 	return r

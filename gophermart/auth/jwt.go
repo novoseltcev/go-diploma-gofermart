@@ -8,7 +8,7 @@ import (
 
 type Claims struct {
 	jwt.RegisteredClaims
-	UserId UserId `json:"user_id,omitempty"`
+	UserID UserID `json:"user_id,omitempty"`
 }
 
 type JWTManager struct {
@@ -20,13 +20,13 @@ func NewJWTManager(secret string, lifetime time.Duration) *JWTManager {
 	return &JWTManager{secret, lifetime}
 }
 
-func (jm *JWTManager) CreateTokenString(userId UserId) (string, error) {
+func (jm *JWTManager) CreateTokenString(userID UserID) (string, error) {
 	// создаём новый токен с алгоритмом подписи HS256 и утверждениями — Claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(jm.Lifetime)),
 		},
-		UserId: userId,
+		UserID: userID,
 	})
 
 	tokenString, err := token.SignedString([]byte(jm.secret))

@@ -8,15 +8,15 @@ import (
 )
 
 
-func GetUserId(c *gin.Context) auth.UserId {
+func GetUserID(c *gin.Context) auth.UserID {
 	authIdentity, ok := c.Get(auth.IdentityKey)
 	if !ok {
 		panic(errors.New("auth identity not passed to router"))
 	}
 
-	userId, ok := authIdentity.(auth.UserId)
+	userID, ok := authIdentity.(auth.UserID)
 	if !ok {
 		panic(errors.New("auth identity not passed to router"))
 	}
-	return userId
+	return userID
 }

@@ -23,26 +23,26 @@ func Login(uowPool shared.UOWPool, jwtManager *auth.JWTManager) gin.HandlerFunc 
 	return func (c *gin.Context) {
 		var body reqBody
 		if err := c.Bind(&body); err != nil {
-			r.InvalidRequestErr(c, err)
+			r.ErrInvalidRequest(c, err)
 			return
 		}
 
 		uow := uowPool(c)
 		defer uow.Close()
 
-		userId, err := users.Login(c, storager.New(uow), body.Login, body.Password)
+		userID, err := users.Login(c, storager.New(uow), body.Login, body.Password)
 		if err != nil {
 			if errors.Is(err, users.ErrNotExists) {
-				r.UnauthorizedErr(c, err)
+				r.ErrUnauthorized(c, err)
 			} else {
-				r.InternalErr(c, err)
+				r.ErrInternal(c, err)
 			}
 			return
 		}
 
-		token, err := jwtManager.CreateTokenString(userId)
+		token, err := jwtManager.CreateTokenString(userID)
 		if err != nil {
-			r.InternalErr(c, err)
+			r.ErrInternal(c, err)
 		}
 
 		c.JSON(http.StatusOK, gin.H{"accessToken": token})
