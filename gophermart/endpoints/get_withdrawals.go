@@ -25,6 +25,7 @@ func GetWithdrawals(uowPool shared.UOWPool) gin.HandlerFunc {
 			return
 		}
 
+		c.Header("Content-Type", "application/json")
 		if len(withdrawals) == 0 {
 			c.JSON(http.StatusNoContent, nil)
 		} else {

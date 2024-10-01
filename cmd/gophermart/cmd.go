@@ -43,6 +43,6 @@ func Cmd() *cobra.Command {
 	flags.StringP("d", "d", "", "Database URI")
 	flags.StringP("r", "r", "", "Accrual system address")
 	flags.StringP("secret", "s", "", "JWT secret key")
-	flags.IntP("l", "l", 0, "JWT lifetime (in days)")
+	flags.IntP("l", "l", 7, "JWT lifetime (in days)")
 	return cmd
 }

@@ -25,6 +25,7 @@ func GetOrders(uowPool shared.UOWPool) gin.HandlerFunc {
 			return
 		}
 
+		c.Header("Content-Type", "application/json")
 		if len(orders) == 0 {
 			c.JSON(http.StatusNoContent, nil)
 		} else {

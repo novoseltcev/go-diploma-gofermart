@@ -26,6 +26,8 @@ func GetBalance(uowPool shared.UOWPool) gin.HandlerFunc {
 			r.ErrInternal(c, err)
 			return
 		}
+
+		c.Header("Content-Type", "application/json")
 		c.JSON(http.StatusOK, balance)
 	}
 }

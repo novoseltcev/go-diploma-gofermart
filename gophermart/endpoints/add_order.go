@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"errors"
+	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,23 +17,20 @@ import (
 
 
 func AddOrder(uowPool shared.UOWPool) gin.HandlerFunc {
-	type reqBody struct {
-		Number string `json:"number" binding:"required"`
-	}
-
 	return func (c *gin.Context) {
 		userID := utils.GetUserID(c)
 
-		var body reqBody
-		if err := c.Bind(&body); err != nil {
+		body, err := io.ReadAll(c.Request.Body)
+		if err != nil {
 			r.ErrInvalidRequest(c, err)
 			return
 		}
+		number := string(body)
 
 		uow := uowPool(c)
 		defer uow.Close()
 
-		if err := orders.AddOrderToUser(c, storager.New(uow), userID, body.Number); err != nil {
+		if err := orders.AddOrderToUser(c, storager.New(uow), userID, number); err != nil {
 			if errors.Is(err, orders.ErrOrderLoaded) {
 				c.JSON(http.StatusOK, nil)
 			} else if errors.Is(err, orders.ErrLunhNumberValidation) {

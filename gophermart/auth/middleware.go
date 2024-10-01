@@ -13,7 +13,8 @@ func JWTMiddleware(manager *JWTManager) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {
-			r.ErrUnauthorized(c, errors.New(""))
+			r.ErrUnauthorized(c, errors.New("authorization header is missing"))
+			return
 		}
 
 		claims := &Claims{}

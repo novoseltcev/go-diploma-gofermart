@@ -47,6 +47,7 @@ func Register(uowPool shared.UOWPool, jwtManager *auth.JWTManager) gin.HandlerFu
 			r.ErrInternal(c, err)
 		}
 
-		c.JSON(http.StatusOK, gin.H{"access": token})
+		c.Header("Authorization", token)
+		c.JSON(http.StatusOK, gin.H{})
 	}
 }

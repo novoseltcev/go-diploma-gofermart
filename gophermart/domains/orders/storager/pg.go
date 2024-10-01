@@ -20,7 +20,7 @@ func New(uow *shared.UnitOfWork) orders.OrderStorager {
 }
 
 func (r *repository) GetUserOrders(ctx context.Context, userID uint64) (result []models.Order, err error) {
-	err = r.tx.GetContext(ctx, &result, "SELECT number, status, accrual, user_id, uploaded_at FROM orders WHERE user_id = $1", userID)
+	err = r.tx.SelectContext(ctx, &result, "SELECT number, status, accrual, user_id, uploaded_at FROM orders WHERE user_id = $1", userID)
 	return result, err
 }
 
