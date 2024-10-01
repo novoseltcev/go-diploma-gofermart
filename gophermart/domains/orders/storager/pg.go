@@ -37,3 +37,13 @@ func (r *repository) Create(ctx context.Context, userID uint64, number string) e
 	_, err := r.tx.ExecContext(ctx, "INSERT INTO orders (number, user_id) VALUES ($1, $2)", number, userID)
 	return err
 }
+
+func (r *repository) GetUncompletedOrders(ctx context.Context) (result []models.Order, err error) {
+	err = r.tx.SelectContext(ctx, &result, "SELECT number, status, accrual, user_id, uploaded_at FROM orders WHERE status = 'NEW' or status = 'PROCESSING' ORDER BY uploaded_at ASC")
+	return result, err
+}
+
+func (r *repository) Update(ctx context.Context, number string, status string, accural *uint64) error {
+	_, err := r.tx.ExecContext(ctx, "UPDATE orders SET status = $1, accrual = $2 WHERE number = $3", status, accural, number)
+	return err
+}

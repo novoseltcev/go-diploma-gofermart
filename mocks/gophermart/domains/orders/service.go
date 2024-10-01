@@ -35,18 +35,33 @@ func (m *MockOrderStorager) EXPECT() *MockOrderStoragerMockRecorder {
 }
 
 // GetUserOrders mocks base method
-func (m *MockOrderStorager) GetUserOrders(ctx context.Context, userId uint64) ([]models.Order, error) {
+func (m *MockOrderStorager) GetUserOrders(ctx context.Context, userID uint64) ([]models.Order, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserOrders", ctx, userId)
+	ret := m.ctrl.Call(m, "GetUserOrders", ctx, userID)
 	ret0, _ := ret[0].([]models.Order)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserOrders indicates an expected call of GetUserOrders
-func (mr *MockOrderStoragerMockRecorder) GetUserOrders(ctx, userId interface{}) *gomock.Call {
+func (mr *MockOrderStoragerMockRecorder) GetUserOrders(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserOrders", reflect.TypeOf((*MockOrderStorager)(nil).GetUserOrders), ctx, userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserOrders", reflect.TypeOf((*MockOrderStorager)(nil).GetUserOrders), ctx, userID)
+}
+
+// GetUncompletedOrders mocks base method
+func (m *MockOrderStorager) GetUncompletedOrders(ctx context.Context) ([]models.Order, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUncompletedOrders", ctx)
+	ret0, _ := ret[0].([]models.Order)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUncompletedOrders indicates an expected call of GetUncompletedOrders
+func (mr *MockOrderStoragerMockRecorder) GetUncompletedOrders(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUncompletedOrders", reflect.TypeOf((*MockOrderStorager)(nil).GetUncompletedOrders), ctx)
 }
 
 // GetByNumber mocks base method
@@ -65,15 +80,29 @@ func (mr *MockOrderStoragerMockRecorder) GetByNumber(ctx, number interface{}) *g
 }
 
 // Create mocks base method
-func (m *MockOrderStorager) Create(ctx context.Context, userId uint64, number string) error {
+func (m *MockOrderStorager) Create(ctx context.Context, userID uint64, number string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", ctx, userId, number)
+	ret := m.ctrl.Call(m, "Create", ctx, userID, number)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Create indicates an expected call of Create
-func (mr *MockOrderStoragerMockRecorder) Create(ctx, userId, number interface{}) *gomock.Call {
+func (mr *MockOrderStoragerMockRecorder) Create(ctx, userID, number interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockOrderStorager)(nil).Create), ctx, userId, number)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockOrderStorager)(nil).Create), ctx, userID, number)
+}
+
+// Update mocks base method
+func (m *MockOrderStorager) Update(ctx context.Context, number, status string, accural *uint64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, number, status, accural)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Update indicates an expected call of Update
+func (mr *MockOrderStoragerMockRecorder) Update(ctx, number, status, accural interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockOrderStorager)(nil).Update), ctx, number, status, accural)
 }

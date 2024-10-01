@@ -49,21 +49,6 @@ func (mr *MockUserStoragerMockRecorder) IsLoginExists(ctx, login interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsLoginExists", reflect.TypeOf((*MockUserStorager)(nil).IsLoginExists), ctx, login)
 }
 
-// GetById mocks base method
-func (m *MockUserStorager) GetById(ctx context.Context, userId uint64) (*models.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetById", ctx, userId)
-	ret0, _ := ret[0].(*models.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetById indicates an expected call of GetById
-func (mr *MockUserStoragerMockRecorder) GetById(ctx, userId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetById", reflect.TypeOf((*MockUserStorager)(nil).GetById), ctx, userId)
-}
-
 // GetByLogin mocks base method
 func (m *MockUserStorager) GetByLogin(ctx context.Context, login string) (*models.User, error) {
 	m.ctrl.T.Helper()

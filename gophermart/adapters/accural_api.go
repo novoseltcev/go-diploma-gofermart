@@ -22,54 +22,44 @@ type AccuralAPI struct {
 	client *http.Client
 	baseURL string
 	timeout time.Duration
-	retries int
 }
 
-func NewAccuralAPI(client *http.Client, baseURL string, timeout time.Duration, retries int) *AccuralAPI {
-	return &AccuralAPI{client: client, baseURL: baseURL, timeout: timeout, retries: retries}
+func NewAccuralAPI(client *http.Client, baseURL string, timeout time.Duration) *AccuralAPI {
+	return &AccuralAPI{client: client, baseURL: baseURL, timeout: timeout}
 }
 
 
 type Order struct {
 	Number string  `json:"number"`
 	Status string  `json:"status"`
-	Accural uint64 `json:"accural,omitempty"`
+	Accural *uint64 `json:"accural,omitempty"`
 }
 
+
 func (api *AccuralAPI) GetOrderAccuralStatus(ctx context.Context, order string) (result *Order, err error) {
-	var (
-		res *http.Response
-		retries = api.retries
-	)
+	ctx, cancel := context.WithTimeout(ctx, api.timeout)
+	defer cancel()
 
-    for retries > 0 {
-		ctx, cancel := context.WithTimeout(ctx, api.timeout)
-		defer cancel()
-
-        req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/api/orders/%s", api.baseURL, order), http.NoBody)
-		if err != nil {
-			return nil, err
-		}
-
-		res, err = api.client.Do(req)
-		if err != nil {
-			retries -= 1
-		} else {
-			defer res.Body.Close()
-			break
-		}
-	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/api/orders/%s", api.baseURL, order), http.NoBody)
 	if err != nil {
+		log.Error("failed to create request")
 		return nil, err
 	}
 
-	var buf *bytes.Buffer
-	if res.Body != nil {
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return nil, err
-		}
+	res, err := api.client.Do(req)
+	if err != nil {
+		log.Error("failed to do request")
+		return nil, err
 	}
+	defer res.Body.Close()
 
+	var buf *bytes.Buffer
+
+	if _, err := io.Copy(buf, res.Body); err != nil {
+		log.Error("failed to copy response body")
+		return nil, err
+	}
+	
 	switch res.StatusCode {
 	case http.StatusOK:
 		return result, json.Unmarshal(buf.Bytes(), result)

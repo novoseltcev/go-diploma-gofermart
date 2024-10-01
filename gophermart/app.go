@@ -1,6 +1,7 @@
 package gophermart
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"time"
@@ -11,7 +12,10 @@ import (
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/adapters"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/domains/orders/storager"
 	"github.com/novoseltcev/go-diploma-gofermart/gophermart/endpoints"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/workers"
 	"github.com/novoseltcev/go-diploma-gofermart/shared"
 
 	"github.com/novoseltcev/go-diploma-gofermart/gophermart/auth"
@@ -39,12 +43,18 @@ func (app *App) Start() error {
 		return err
 	}
 	defer db.Close()
+	uowPool := shared.NewUOWPool(db)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go app.runWorkers(ctx, uowPool)
 
 	log.Info("App is started")
-	return http.ListenAndServe(app.config.Address, app.GetRouter(db))
+	return http.ListenAndServe(app.config.Address, app.GetRouter(uowPool))
 }
 
-func (app *App) GetRouter(db *sqlx.DB) http.Handler {
+func (app *App) GetRouter(uowPool shared.UOWPool) http.Handler {
 	r := gin.Default()
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
@@ -53,7 +63,6 @@ func (app *App) GetRouter(db *sqlx.DB) http.Handler {
 	})
 
 	jwtManager := auth.NewJWTManager(app.config.JwtSecret, time.Duration(app.config.JwtLifetime) * time.Hour * 24)
-	uowPool := shared.NewUOWPool(db)
 
 	r.POST("/api/user/login", endpoints.Login(uowPool, jwtManager))
 	r.POST("/api/user/register", endpoints.Register(uowPool, jwtManager))
@@ -72,4 +81,15 @@ func (app *App) GetRouter(db *sqlx.DB) http.Handler {
 	}
 
 	return r
+}
+
+func (app *App) runWorkers(ctx context.Context, uowPool shared.UOWPool) {
+	uow := uowPool(ctx)
+	defer uow.Close()
+
+	go workers.ProcessUncompletedOrders(ctx, storager.New(uow), adapters.NewAccuralAPI(http.DefaultClient, app.config.AccrualAddress, time.Second))
+
+	log.Info("workers started")
+	<-ctx.Done()
+	log.Info("workers stopped")
 }

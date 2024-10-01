@@ -11,8 +11,10 @@ import (
 
 type OrderStorager interface {
 	GetUserOrders(ctx context.Context, userID uint64) ([]models.Order, error)
+	GetUncompletedOrders(ctx context.Context) ([]models.Order, error)
 	GetByNumber(ctx context.Context, number string) (*models.Order, error)
 	Create(ctx context.Context, userID uint64, number string) error
+	Update(ctx context.Context, number, status string, accural *uint64) error
 }
 
 var (

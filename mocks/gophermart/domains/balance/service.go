@@ -35,74 +35,74 @@ func (m *MockBalanceStorager) EXPECT() *MockBalanceStoragerMockRecorder {
 }
 
 // GetBalance mocks base method
-func (m *MockBalanceStorager) GetBalance(ctx context.Context, userId uint64) (models.Money, error) {
+func (m *MockBalanceStorager) GetBalance(ctx context.Context, userID uint64) (models.Money, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBalance", ctx, userId)
+	ret := m.ctrl.Call(m, "GetBalance", ctx, userID)
 	ret0, _ := ret[0].(models.Money)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetBalance indicates an expected call of GetBalance
-func (mr *MockBalanceStoragerMockRecorder) GetBalance(ctx, userId interface{}) *gomock.Call {
+func (mr *MockBalanceStoragerMockRecorder) GetBalance(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBalance", reflect.TypeOf((*MockBalanceStorager)(nil).GetBalance), ctx, userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBalance", reflect.TypeOf((*MockBalanceStorager)(nil).GetBalance), ctx, userID)
 }
 
 // UpdateBalance mocks base method
-func (m *MockBalanceStorager) UpdateBalance(ctx context.Context, userId uint64, value float32) error {
+func (m *MockBalanceStorager) UpdateBalance(ctx context.Context, userID uint64, value float32) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateBalance", ctx, userId, value)
+	ret := m.ctrl.Call(m, "UpdateBalance", ctx, userID, value)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpdateBalance indicates an expected call of UpdateBalance
-func (mr *MockBalanceStoragerMockRecorder) UpdateBalance(ctx, userId, value interface{}) *gomock.Call {
+func (mr *MockBalanceStoragerMockRecorder) UpdateBalance(ctx, userID, value interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBalance", reflect.TypeOf((*MockBalanceStorager)(nil).UpdateBalance), ctx, userId, value)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBalance", reflect.TypeOf((*MockBalanceStorager)(nil).UpdateBalance), ctx, userID, value)
 }
 
 // GetTotalWithrawn mocks base method
-func (m *MockBalanceStorager) GetTotalWithrawn(ctx context.Context, userId uint64) (models.Money, error) {
+func (m *MockBalanceStorager) GetTotalWithrawn(ctx context.Context, userID uint64) (models.Money, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTotalWithrawn", ctx, userId)
+	ret := m.ctrl.Call(m, "GetTotalWithrawn", ctx, userID)
 	ret0, _ := ret[0].(models.Money)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetTotalWithrawn indicates an expected call of GetTotalWithrawn
-func (mr *MockBalanceStoragerMockRecorder) GetTotalWithrawn(ctx, userId interface{}) *gomock.Call {
+func (mr *MockBalanceStoragerMockRecorder) GetTotalWithrawn(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTotalWithrawn", reflect.TypeOf((*MockBalanceStorager)(nil).GetTotalWithrawn), ctx, userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTotalWithrawn", reflect.TypeOf((*MockBalanceStorager)(nil).GetTotalWithrawn), ctx, userID)
 }
 
 // GetUserWithdrawals mocks base method
-func (m *MockBalanceStorager) GetUserWithdrawals(ctx context.Context, userId uint64) ([]models.Withdraw, error) {
+func (m *MockBalanceStorager) GetUserWithdrawals(ctx context.Context, userID uint64) ([]models.Withdraw, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserWithdrawals", ctx, userId)
+	ret := m.ctrl.Call(m, "GetUserWithdrawals", ctx, userID)
 	ret0, _ := ret[0].([]models.Withdraw)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserWithdrawals indicates an expected call of GetUserWithdrawals
-func (mr *MockBalanceStoragerMockRecorder) GetUserWithdrawals(ctx, userId interface{}) *gomock.Call {
+func (mr *MockBalanceStoragerMockRecorder) GetUserWithdrawals(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserWithdrawals", reflect.TypeOf((*MockBalanceStorager)(nil).GetUserWithdrawals), ctx, userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserWithdrawals", reflect.TypeOf((*MockBalanceStorager)(nil).GetUserWithdrawals), ctx, userID)
 }
 
 // CreateWithdrawal mocks base method
-func (m *MockBalanceStorager) CreateWithdrawal(ctx context.Context, userId, sum uint64, order string) error {
+func (m *MockBalanceStorager) CreateWithdrawal(ctx context.Context, userID, sum uint64, order string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateWithdrawal", ctx, userId, sum, order)
+	ret := m.ctrl.Call(m, "CreateWithdrawal", ctx, userID, sum, order)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // CreateWithdrawal indicates an expected call of CreateWithdrawal
-func (mr *MockBalanceStoragerMockRecorder) CreateWithdrawal(ctx, userId, sum, order interface{}) *gomock.Call {
+func (mr *MockBalanceStoragerMockRecorder) CreateWithdrawal(ctx, userID, sum, order interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWithdrawal", reflect.TypeOf((*MockBalanceStorager)(nil).CreateWithdrawal), ctx, userId, sum, order)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWithdrawal", reflect.TypeOf((*MockBalanceStorager)(nil).CreateWithdrawal), ctx, userID, sum, order)
 }
