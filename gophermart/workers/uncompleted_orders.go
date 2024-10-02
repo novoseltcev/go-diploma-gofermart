@@ -8,13 +8,13 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/novoseltcev/go-diploma-gofermart/gophermart/adapters"
-	. "github.com/novoseltcev/go-diploma-gofermart/gophermart/models"
+	"github.com/novoseltcev/go-diploma-gofermart/gophermart/models"
 )
 
 type OrderStorager interface {
-	GetUncompletedOrders(ctx context.Context) ([]Order, error)
-	UpdateOrder(ctx context.Context, number, status string, accural *Money) error
-	UpdateBalance(ctx context.Context, userID UserID, accural Money) error
+	GetUncompletedOrders(ctx context.Context) ([]models.Order, error)
+	UpdateOrder(ctx context.Context, number, status string, accural *models.Money) error
+	UpdateBalance(ctx context.Context, userID models.UserID, accural models.Money) error
 	Begin(ctx context.Context) error
 	Commit(ctx context.Context) error
 	Rollback(ctx context.Context) error
@@ -29,17 +29,17 @@ func NewOrderStorager(db *sqlx.DB) OrderStorager {
 }
 
 
-func (r *repository) GetUncompletedOrders(ctx context.Context) (result []Order, err error) {
+func (r *repository) GetUncompletedOrders(ctx context.Context) (result []models.Order, err error) {
 	err = r.db.SelectContext(ctx, &result, "SELECT number, status, accrual::numeric as accrual, user_id, uploaded_at FROM orders WHERE status = 'NEW' or status = 'PROCESSING' ORDER BY uploaded_at ASC")
 	return result, err
 }
 
-func (r *repository) UpdateOrder(ctx context.Context, number string, status string, accrual *Money) error {
+func (r *repository) UpdateOrder(ctx context.Context, number string, status string, accrual *models.Money) error {
 	_, err := r.db.ExecContext(ctx, "UPDATE orders SET status = $1, accrual = $2::MONEY WHERE number = $3", status, accrual, number)
 	return err
 }
 
-func (r *repository) UpdateBalance(ctx context.Context, userID UserID, accural Money) error {
+func (r *repository) UpdateBalance(ctx context.Context, userID models.UserID, accural models.Money) error {
 	_, err := r.db.ExecContext(ctx, "UPDATE users SET balance = balance + $1::MONEY WHERE id = $2", accural, userID)
 	return err
 }
