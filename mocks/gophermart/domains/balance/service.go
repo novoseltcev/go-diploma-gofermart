@@ -34,19 +34,19 @@ func (m *MockBalanceStorager) EXPECT() *MockBalanceStoragerMockRecorder {
 	return m.recorder
 }
 
-// GetBalance mocks base method
-func (m *MockBalanceStorager) GetBalance(ctx context.Context, userID models.UserID) (models.Money, error) {
+// GetCurrent mocks base method
+func (m *MockBalanceStorager) GetCurrent(ctx context.Context, userID models.UserID) (models.Money, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBalance", ctx, userID)
+	ret := m.ctrl.Call(m, "GetCurrent", ctx, userID)
 	ret0, _ := ret[0].(models.Money)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetBalance indicates an expected call of GetBalance
-func (mr *MockBalanceStoragerMockRecorder) GetBalance(ctx, userID interface{}) *gomock.Call {
+// GetCurrent indicates an expected call of GetCurrent
+func (mr *MockBalanceStoragerMockRecorder) GetCurrent(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBalance", reflect.TypeOf((*MockBalanceStorager)(nil).GetBalance), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrent", reflect.TypeOf((*MockBalanceStorager)(nil).GetCurrent), ctx, userID)
 }
 
 // UpdateBalance mocks base method

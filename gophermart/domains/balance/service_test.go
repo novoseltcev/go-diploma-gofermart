@@ -26,12 +26,12 @@ func TestSuccessGetBalance(t *testing.T) {
 	storager := mock_balance.NewMockBalanceStorager(ctrl)
 
 	want := models.Balance{
-		Balance: 123.45,
+		Current: 123.45,
 		Withdrawn: 12.,
 	}
 	
 	gomock.InOrder(
-		storager.EXPECT().GetBalance(someCtx, someUserID).Return(want.Balance, nil),
+		storager.EXPECT().GetCurrent(someCtx, someUserID).Return(want.Current, nil),
 		storager.EXPECT().GetTotalWithrawn(someCtx, someUserID).Return(want.Withdrawn, nil),
 	)
 
@@ -83,7 +83,7 @@ func TestSuccessWithdrawn(t *testing.T) {
 	var sum models.Money = 123.12
 
 	gomock.InOrder(
-		storager.EXPECT().GetBalance(someCtx, someUserID).Return(sum, nil),
+		storager.EXPECT().GetCurrent(someCtx, someUserID).Return(sum, nil),
 		storager.EXPECT().CreateWithdrawal(someCtx, someUserID, sum, someNumber).Return(nil),
 		storager.EXPECT().UpdateBalance(someCtx, someUserID, float32(0)).Return(nil),
 	)
@@ -107,7 +107,7 @@ func TestFailedNotEnoughtWithdrawn(t *testing.T) {
 	storager := mock_balance.NewMockBalanceStorager(ctrl)
 	var sum models.Money = 123.12
 
-	storager.EXPECT().GetBalance(someCtx, someUserID).Return(122.99, nil)
+	storager.EXPECT().GetCurrent(someCtx, someUserID).Return(float32(122.99), nil)
 	storager.EXPECT().CreateWithdrawal(someCtx, someUserID, sum, someNumber).Times(0)
 	storager.EXPECT().UpdateBalance(someCtx, someUserID, gomock.Any()).Times(0)
 
@@ -148,7 +148,7 @@ func TestFailedWithdrawn(t *testing.T) {
 			storager := mock_balance.NewMockBalanceStorager(ctrl)
 			var sum models.Money = 1
 
-			storager.EXPECT().GetBalance(someCtx, someUserID).Return(sum, tt.GetBalanceErr)
+			storager.EXPECT().GetCurrent(someCtx, someUserID).Return(sum, tt.GetBalanceErr)
 			if tt.GetBalanceErr == nil {
 				storager.EXPECT().CreateWithdrawal(someCtx, someUserID, sum, someNumber).Return(tt.CreateWithdrawalErr)
 				if tt.CreateWithdrawalErr == nil {

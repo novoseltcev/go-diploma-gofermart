@@ -35,7 +35,7 @@ func (m *MockOrderStorager) EXPECT() *MockOrderStoragerMockRecorder {
 }
 
 // GetUserOrders mocks base method
-func (m *MockOrderStorager) GetUserOrders(ctx context.Context, userID uint64) ([]models.Order, error) {
+func (m *MockOrderStorager) GetUserOrders(ctx context.Context, userID models.UserID) ([]models.Order, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserOrders", ctx, userID)
 	ret0, _ := ret[0].([]models.Order)
@@ -65,7 +65,7 @@ func (mr *MockOrderStoragerMockRecorder) GetByNumber(ctx, number interface{}) *g
 }
 
 // Create mocks base method
-func (m *MockOrderStorager) Create(ctx context.Context, userID uint64, number string) error {
+func (m *MockOrderStorager) Create(ctx context.Context, userID models.UserID, number string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, userID, number)
 	ret0, _ := ret[0].(error)

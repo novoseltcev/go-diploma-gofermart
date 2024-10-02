@@ -17,7 +17,7 @@ func New(uow *shared.UnitOfWork) balance.BalanceStorager {
 	return &repository{tx: uow.Tx}
 }
 
-func (r *repository) GetBalance(ctx context.Context, userID models.UserID) (result models.Money, err error) {
+func (r *repository) GetCurrent(ctx context.Context, userID models.UserID) (result models.Money, err error) {
 	return result, r.tx.GetContext(ctx, &result, "SELECT balance::numeric FROM users WHERE id = $1", userID)
 }
 

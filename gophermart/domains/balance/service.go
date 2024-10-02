@@ -10,7 +10,7 @@ import (
 
 
 type BalanceStorager interface {
-	GetBalance(ctx context.Context, userID models.UserID) (models.Money, error)
+	GetCurrent(ctx context.Context, userID models.UserID) (models.Money, error)
 	UpdateBalance(ctx context.Context, userID models.UserID, value models.Money) error
 	GetTotalWithrawn(ctx context.Context, userID models.UserID) (models.Money, error)
 	GetUserWithdrawals(ctx context.Context, userID models.UserID) (result []models.Withdraw, err error)
@@ -24,7 +24,7 @@ var (
 )
 
 func GetBalance(ctx context.Context, storager BalanceStorager, userID models.UserID) (*models.Balance, error) {
-	balance, err := storager.GetBalance(ctx, userID)
+	current, err := storager.GetCurrent(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func GetBalance(ctx context.Context, storager BalanceStorager, userID models.Use
 	}
 
 	return &models.Balance{
-		Balance: balance,
+		Current: current,
 		Withdrawn: withdrawn,
 	}, nil
 }
@@ -49,18 +49,18 @@ func Withdrawn(ctx context.Context, storager BalanceStorager, userID models.User
 		return ErrLunhNumberValidation
 	}
 
-	balance, err := storager.GetBalance(ctx, userID)
+	current, err := storager.GetCurrent(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	newBalanceValue := balance - sum
-	if newBalanceValue < 0. {
+	newBalance := current - sum
+	if newBalance < 0. {
 		return ErrNotEnought
 	}
 
 	if err := storager.CreateWithdrawal(ctx, userID, sum, order); err != nil {
 		return err
 	}
-	return storager.UpdateBalance(ctx, userID, newBalanceValue)
+	return storager.UpdateBalance(ctx, userID, newBalance)
 }

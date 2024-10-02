@@ -65,10 +65,10 @@ func (mr *MockUserStoragerMockRecorder) GetByLogin(ctx, login interface{}) *gomo
 }
 
 // Create mocks base method
-func (m *MockUserStorager) Create(ctx context.Context, login, password string) (uint64, error) {
+func (m *MockUserStorager) Create(ctx context.Context, login, password string) (models.UserID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, login, password)
-	ret0, _ := ret[0].(uint64)
+	ret0, _ := ret[0].(models.UserID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
