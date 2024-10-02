@@ -1,0 +1,13 @@
+BEGIN;
+
+DELETE INDEX IF EXISTS ix_withdrawals_user_id;
+DELETE TABLE IF EXISTS withdrawals;
+DELETE SEQUENCE IF EXISTS withdrawals_seq;
+
+DELETE INDEX IF EXISTS ix_orders_user_id;
+DELETE TABLE IF EXISTS orders;
+
+DELETE TABLE IF EXISTS users;
+DELETE SEQUENCE IF EXISTS users_seq;
+
+COMMIT;
