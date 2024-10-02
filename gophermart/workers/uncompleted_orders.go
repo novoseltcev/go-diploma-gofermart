@@ -61,7 +61,7 @@ func (r *repository) Rollback(ctx context.Context) error {
 
 
 func ProcessUncompletedOrders(ctx context.Context, storager OrderStorager, accuralAPI *adapters.AccrualAPI) {
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
 	for {
