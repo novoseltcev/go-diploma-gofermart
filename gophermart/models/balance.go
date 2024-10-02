@@ -2,6 +2,6 @@ package models
 
 
 type Balance struct {
-	Balance float32 `json:"balance"`
-	Withdrawn float32 `json:"withdrawn"`
+	Balance Money `json:"balance"`
+	Withdrawn Money `json:"withdrawn"`
 }

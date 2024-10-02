@@ -16,7 +16,7 @@ import (
 
 func Withdraw(uowPool shared.UOWPool) gin.HandlerFunc {
 	type reqBody struct {
-		Sum uint64  `json:"sum" binding:"required"`
+		Sum float32  `json:"sum" binding:"required"`
 		Order string `json:"order" binding:"required"`
 	}
 

@@ -35,7 +35,7 @@ func (m *MockBalanceStorager) EXPECT() *MockBalanceStoragerMockRecorder {
 }
 
 // GetBalance mocks base method
-func (m *MockBalanceStorager) GetBalance(ctx context.Context, userID uint64) (models.Money, error) {
+func (m *MockBalanceStorager) GetBalance(ctx context.Context, userID models.UserID) (models.Money, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetBalance", ctx, userID)
 	ret0, _ := ret[0].(models.Money)
@@ -50,7 +50,7 @@ func (mr *MockBalanceStoragerMockRecorder) GetBalance(ctx, userID interface{}) *
 }
 
 // UpdateBalance mocks base method
-func (m *MockBalanceStorager) UpdateBalance(ctx context.Context, userID uint64, value float32) error {
+func (m *MockBalanceStorager) UpdateBalance(ctx context.Context, userID models.UserID, value models.Money) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateBalance", ctx, userID, value)
 	ret0, _ := ret[0].(error)
@@ -64,7 +64,7 @@ func (mr *MockBalanceStoragerMockRecorder) UpdateBalance(ctx, userID, value inte
 }
 
 // GetTotalWithrawn mocks base method
-func (m *MockBalanceStorager) GetTotalWithrawn(ctx context.Context, userID uint64) (models.Money, error) {
+func (m *MockBalanceStorager) GetTotalWithrawn(ctx context.Context, userID models.UserID) (models.Money, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTotalWithrawn", ctx, userID)
 	ret0, _ := ret[0].(models.Money)
@@ -79,7 +79,7 @@ func (mr *MockBalanceStoragerMockRecorder) GetTotalWithrawn(ctx, userID interfac
 }
 
 // GetUserWithdrawals mocks base method
-func (m *MockBalanceStorager) GetUserWithdrawals(ctx context.Context, userID uint64) ([]models.Withdraw, error) {
+func (m *MockBalanceStorager) GetUserWithdrawals(ctx context.Context, userID models.UserID) ([]models.Withdraw, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserWithdrawals", ctx, userID)
 	ret0, _ := ret[0].([]models.Withdraw)
@@ -94,7 +94,7 @@ func (mr *MockBalanceStoragerMockRecorder) GetUserWithdrawals(ctx, userID interf
 }
 
 // CreateWithdrawal mocks base method
-func (m *MockBalanceStorager) CreateWithdrawal(ctx context.Context, userID, sum uint64, order string) error {
+func (m *MockBalanceStorager) CreateWithdrawal(ctx context.Context, userID models.UserID, sum models.Money, order string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateWithdrawal", ctx, userID, sum, order)
 	ret0, _ := ret[0].(error)

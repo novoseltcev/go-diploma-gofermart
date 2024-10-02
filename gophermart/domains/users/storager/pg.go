@@ -33,7 +33,7 @@ func (r *repository) GetByLogin(ctx context.Context, login string) (result *mode
 	return result, err
 }
 
-func (r *repository) Create(ctx context.Context, login, password string) (uint64, error) {
+func (r *repository) Create(ctx context.Context, login, password string) (models.UserID, error) {
 	var res uint64
 	err := r.tx.GetContext(ctx, &res, "INSERT INTO users (login, hashed_password) VALUES ($1, $2) RETURNING id", login, password)
 	if err != nil {

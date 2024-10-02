@@ -13,7 +13,7 @@ import (
 type UserStorager interface {
 	IsLoginExists(ctx context.Context, login string) (bool, error)
 	GetByLogin(ctx context.Context, login string) (*models.User, error)
-	Create(ctx context.Context, login, password string) (uint64, error)
+	Create(ctx context.Context, login, password string) (models.UserID, error)
 }
 
 
@@ -23,7 +23,7 @@ var (
 )
 
 
-func Register(ctx context.Context, storager UserStorager, login, password string) (userID uint64, err error) {
+func Register(ctx context.Context, storager UserStorager, login, password string) (userID models.UserID, err error) {
 	exists, err := storager.IsLoginExists(ctx, login)
 	if err != nil {
 		return 0, err
@@ -41,7 +41,7 @@ func Register(ctx context.Context, storager UserStorager, login, password string
 	return storager.Create(ctx, login, string(hashedPassword))
 }
 
-func Login(ctx context.Context, storager UserStorager, login, password string) (uint64, error) {
+func Login(ctx context.Context, storager UserStorager, login, password string) (models.UserID, error) {
 	user, err := storager.GetByLogin(ctx, login)
 	if err != nil {
 		return 0, err

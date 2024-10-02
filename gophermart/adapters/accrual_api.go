@@ -18,25 +18,25 @@ var (
 	ErrUnexpected	   = errors.New("unexpected error")
 )
 
-type AccuralAPI struct {
+type AccrualAPI struct {
 	client *http.Client
 	baseURL string
 	timeout time.Duration
 }
 
-func NewAccuralAPI(client *http.Client, baseURL string, timeout time.Duration) *AccuralAPI {
-	return &AccuralAPI{client: client, baseURL: baseURL, timeout: timeout}
+func NewAccuralAPI(client *http.Client, baseURL string, timeout time.Duration) *AccrualAPI {
+	return &AccrualAPI{client: client, baseURL: baseURL, timeout: timeout}
 }
 
 
 type Order struct {
 	Number string  `json:"number"`
 	Status string  `json:"status"`
-	Accural *uint64 `json:"accural,omitempty"`
+	Accrual *float32 `json:"accrual,omitempty"`
 }
 
 
-func (api *AccuralAPI) GetOrderAccuralStatus(ctx context.Context, order string) (result *Order, err error) {
+func (api *AccrualAPI) GetOrderAccuralStatus(ctx context.Context, order string) (result *Order, err error) {
 	ctx, cancel := context.WithTimeout(ctx, api.timeout)
 	defer cancel()
 
@@ -53,8 +53,7 @@ func (api *AccuralAPI) GetOrderAccuralStatus(ctx context.Context, order string) 
 	}
 	defer res.Body.Close()
 
-	var buf *bytes.Buffer
-
+	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, res.Body); err != nil {
 		log.Error("failed to copy response body")
 		return nil, err
@@ -62,7 +61,7 @@ func (api *AccuralAPI) GetOrderAccuralStatus(ctx context.Context, order string) 
 	
 	switch res.StatusCode {
 	case http.StatusOK:
-		return result, json.Unmarshal(buf.Bytes(), result)
+		return result, json.Unmarshal(buf.Bytes(), &result)
 	case http.StatusNoContent:
 		return nil, nil
 	case http.StatusTooManyRequests:

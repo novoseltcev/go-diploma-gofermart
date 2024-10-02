@@ -13,7 +13,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/novoseltcev/go-diploma-gofermart/gophermart/adapters"
-	"github.com/novoseltcev/go-diploma-gofermart/gophermart/domains/orders/storager"
 	"github.com/novoseltcev/go-diploma-gofermart/gophermart/endpoints"
 	"github.com/novoseltcev/go-diploma-gofermart/gophermart/workers"
 	"github.com/novoseltcev/go-diploma-gofermart/shared"
@@ -48,7 +47,7 @@ func (app *App) Start() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go app.runWorkers(ctx, uowPool)
+	go app.runWorkers(ctx, db)
 
 	log.Info("App is started")
 	return http.ListenAndServe(app.config.Address, app.GetRouter(uowPool))
@@ -83,11 +82,8 @@ func (app *App) GetRouter(uowPool shared.UOWPool) http.Handler {
 	return r
 }
 
-func (app *App) runWorkers(ctx context.Context, uowPool shared.UOWPool) {
-	uow := uowPool(ctx)
-	defer uow.Close()
-
-	go workers.ProcessUncompletedOrders(ctx, storager.New(uow), adapters.NewAccuralAPI(http.DefaultClient, app.config.AccrualAddress, time.Second))
+func (app *App) runWorkers(ctx context.Context, db *sqlx.DB) {
+	go workers.ProcessUncompletedOrders(ctx, workers.NewOrderStorager(db), adapters.NewAccuralAPI(http.DefaultClient, app.config.AccrualAddress, time.Second))
 
 	log.Info("workers started")
 	<-ctx.Done()

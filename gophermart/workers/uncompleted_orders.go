@@ -4,13 +4,63 @@ import (
 	"context"
 	"time"
 
+	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/novoseltcev/go-diploma-gofermart/gophermart/adapters"
-	"github.com/novoseltcev/go-diploma-gofermart/gophermart/domains/orders"
+	. "github.com/novoseltcev/go-diploma-gofermart/gophermart/models"
 )
 
-func ProcessUncompletedOrders(ctx context.Context, storager orders.OrderStorager, accuralAPI *adapters.AccuralAPI) {
+type OrderStorager interface {
+	GetUncompletedOrders(ctx context.Context) ([]Order, error)
+	UpdateOrder(ctx context.Context, number, status string, accural *Money) error
+	UpdateBalance(ctx context.Context, userID UserID, accural Money) error
+	Begin(ctx context.Context) error
+	Commit(ctx context.Context) error
+	Rollback(ctx context.Context) error
+}
+
+type repository struct {
+	db *sqlx.DB
+}
+
+func NewOrderStorager(db *sqlx.DB) OrderStorager {
+	return &repository{db: db}	
+}
+
+
+func (r *repository) GetUncompletedOrders(ctx context.Context) (result []Order, err error) {
+	err = r.db.SelectContext(ctx, &result, "SELECT number, status, accrual::numeric as accrual, user_id, uploaded_at FROM orders WHERE status = 'NEW' or status = 'PROCESSING' ORDER BY uploaded_at ASC")
+	return result, err
+}
+
+func (r *repository) UpdateOrder(ctx context.Context, number string, status string, accrual *Money) error {
+	_, err := r.db.ExecContext(ctx, "UPDATE orders SET status = $1, accrual = $2::MONEY WHERE number = $3", status, accrual, number)
+	return err
+}
+
+func (r *repository) UpdateBalance(ctx context.Context, userID UserID, accural Money) error {
+	_, err := r.db.ExecContext(ctx, "UPDATE users SET balance = balance + $1::MONEY WHERE id = $2", accural, userID)
+	return err
+}
+
+func (r *repository) Begin(ctx context.Context) error {
+	_, err := r.db.ExecContext(ctx, "BEGIN")
+	return err
+}
+
+func (r *repository) Commit(ctx context.Context) error {
+	_, err := r.db.ExecContext(ctx, "COMMIT")
+	return err
+}
+
+func (r *repository) Rollback(ctx context.Context) error {
+	_, err := r.db.ExecContext(ctx, "ROLLBACK")
+	return err
+}
+
+
+func ProcessUncompletedOrders(ctx context.Context, storager OrderStorager, accuralAPI *adapters.AccrualAPI) {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
@@ -38,10 +88,22 @@ func ProcessUncompletedOrders(ctx context.Context, storager orders.OrderStorager
 					continue
 				}
 
-				err = storager.Update(ctx, o.Number, order.Status, order.Accural)
-				if err != nil {
+				log.WithFields(log.Fields{"order": o.Number, "status": order.Status, "accural": order.Accrual}).Debug("got order")
+
+				_ = storager.Begin(ctx)
+				if err := storager.UpdateOrder(ctx, o.Number, order.Status, order.Accrual); err != nil {
 					log.Error(err.Error())
+					_ = storager.Rollback(ctx)
+					continue
 				}
+				if order.Status == "PROCESSED" {
+					if err := storager.UpdateBalance(ctx, o.UserID, *order.Accrual); err != nil {
+						log.Error(err.Error())
+						_ = storager.Rollback(ctx)
+						continue
+					}
+				}
+				_ = storager.Commit(ctx)
 			}
 		}
 	}

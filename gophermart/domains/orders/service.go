@@ -10,11 +10,9 @@ import (
 
 
 type OrderStorager interface {
-	GetUserOrders(ctx context.Context, userID uint64) ([]models.Order, error)
-	GetUncompletedOrders(ctx context.Context) ([]models.Order, error)
+	GetUserOrders(ctx context.Context, userID models.UserID) ([]models.Order, error)
 	GetByNumber(ctx context.Context, number string) (*models.Order, error)
-	Create(ctx context.Context, userID uint64, number string) error
-	Update(ctx context.Context, number, status string, accural *uint64) error
+	Create(ctx context.Context, userID models.UserID, number string) error
 }
 
 var (
@@ -24,11 +22,11 @@ var (
 )
 
 
-func GetUserOrders(ctx context.Context, storager OrderStorager, userID uint64) ([]models.Order, error) {
+func GetUserOrders(ctx context.Context, storager OrderStorager, userID models.UserID) ([]models.Order, error) {
 	return storager.GetUserOrders(ctx, userID)
 }
 
-func AddOrderToUser(ctx context.Context, storager OrderStorager, userID uint64, number string) error {
+func AddOrderToUser(ctx context.Context, storager OrderStorager, userID models.UserID, number string) error {
 	if !utils.ValidateLunhNumber(number) {
 		return ErrLunhNumberValidation
 	}

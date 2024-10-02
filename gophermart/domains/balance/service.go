@@ -10,11 +10,11 @@ import (
 
 
 type BalanceStorager interface {
-	GetBalance(ctx context.Context, userID uint64) (models.Money, error)
-	UpdateBalance(ctx context.Context, userID uint64, value float32) error
-	GetTotalWithrawn(ctx context.Context, userID uint64) (models.Money, error)
-	GetUserWithdrawals(ctx context.Context, userID uint64) (result []models.Withdraw, err error)
-	CreateWithdrawal(ctx context.Context, userID uint64, sum uint64, order string) error
+	GetBalance(ctx context.Context, userID models.UserID) (models.Money, error)
+	UpdateBalance(ctx context.Context, userID models.UserID, value models.Money) error
+	GetTotalWithrawn(ctx context.Context, userID models.UserID) (models.Money, error)
+	GetUserWithdrawals(ctx context.Context, userID models.UserID) (result []models.Withdraw, err error)
+	CreateWithdrawal(ctx context.Context, userID models.UserID, sum models.Money, order string) error
 }
 
 
@@ -23,7 +23,7 @@ var (
 	ErrNotEnought = errors.New("not enouht balance to withdraw")
 )
 
-func GetBalance(ctx context.Context, storager BalanceStorager, userID uint64) (*models.Balance, error) {
+func GetBalance(ctx context.Context, storager BalanceStorager, userID models.UserID) (*models.Balance, error) {
 	balance, err := storager.GetBalance(ctx, userID)
 	if err != nil {
 		return nil, err
@@ -35,16 +35,16 @@ func GetBalance(ctx context.Context, storager BalanceStorager, userID uint64) (*
 	}
 
 	return &models.Balance{
-		Balance: balance.Value,
-		Withdrawn: withdrawn.Value,
+		Balance: balance,
+		Withdrawn: withdrawn,
 	}, nil
 }
 
-func GetUserWithdrawals(ctx context.Context, storager BalanceStorager, userID uint64) ([]models.Withdraw, error) {
+func GetUserWithdrawals(ctx context.Context, storager BalanceStorager, userID models.UserID) ([]models.Withdraw, error) {
 	return storager.GetUserWithdrawals(ctx, userID)
 }
 
-func Withdrawn(ctx context.Context, storager BalanceStorager, userID uint64, sum uint64, order string) error {
+func Withdrawn(ctx context.Context, storager BalanceStorager, userID models.UserID, sum models.Money, order string) error {
 	if !utils.ValidateLunhNumber(order) {
 		return ErrLunhNumberValidation
 	}
@@ -54,7 +54,7 @@ func Withdrawn(ctx context.Context, storager BalanceStorager, userID uint64, sum
 		return err
 	}
 
-	newBalanceValue := balance.Value - float32(sum)
+	newBalanceValue := balance - sum
 	if newBalanceValue < 0. {
 		return ErrNotEnought
 	}
