@@ -12,7 +12,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    container: golang:1.21
+    container: golang:1.22
 
     services:
       postgres:
@@ -49,6 +49,13 @@ jobs:
         run: |
           (cd cmd/gophermart && go build -buildvcs=false -o gophermart)
           (cd cmd/accrual && chmod +x accrual_linux_amd64)
+      
+      - name: Migrate
+        uses: vovavc/migrate-github-action@v0.2.1
+        with:
+            path: ./migrations
+            database: postgres://postgres:postgres@postgres/praktikum?sslmode=disable
+            command: up
 
       - name: Test
         run: |
